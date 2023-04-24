@@ -1,0 +1,142 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <form action="{% url 'signup' %}" method="POST">
+        {% csrf_token %} {% if role == 'Doctor' %}
+        <h1 style="text-align: center">Add {{role}}</h1>
+
+        {%if messages%} {%for message in messages%}
+        <p>{{message}}</p>
+        {%endfor%} {%endif%} {%if errors%}
+        <div id="errors">
+          
+            {%for error in errors%}
+            <p style="background-color :#dc3545;color: #fff;margin:0.5rem 1rem; padding:0.3rem;border-radius: 4px;">{{error}}</p>
+            {%endfor%}
+          </ul>
+        </div>
+        {%endif%} {%endif%}
+        <div>
+          <input type="text" hidden name="role" value="{{role}}" />
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{first_name}}"
+            name="first_name"
+            id="first_name"
+            required
+            placeholder="First Name"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{last_name}}"
+            name="last_name"
+            id="last_name"
+            required
+            placeholder="Last Name"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{username}}"
+            name="username"
+            id="username"
+            required
+            placeholder="User Name"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="email"
+            value="{{email}}"
+            name="email"
+            id="email"
+            placeholder="Email"
+          />
+          <div class="input-icon"><i class="fa fa-envelope"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="number"
+            value="{{age}}"
+            name="age"
+            id="age"
+            required
+            maxlength="100"
+            placeholder="Age"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="password"
+            name="password1"
+            id="pass1"
+            required
+            placeholder="Password"
+          />
+          <div class="input-icon"><i class="fa fa-key"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="password"
+            name="password2"
+            id="pass2"
+            required
+            placeholder="Confirm Password"
+          />
+          <div class="input-icon"><i class="fa fa-key"></i></div>
+        </div>
+        {% if role == 'Doctor' %}
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{degree}}"
+            name="degree"
+            id="degree"
+            required
+            maxlength="100"
+            placeholder="Degree"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            name="specialization"
+            id="specialization"
+            required
+            maxlength="100"
+            value="{{specialization}}"
+            placeholder="Specialization"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        {%endif%}
+        <div>
+          <button type="submit">Add</button>
+        </div>
+      </form>
+    </div>
+    <script
+      src="https://kit.fontawesome.com/e50a128556.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
