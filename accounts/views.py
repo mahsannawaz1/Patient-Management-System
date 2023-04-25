@@ -215,8 +215,7 @@ def dashboard(request, role):
 
 
 def delete(request, user, pk, role):
-    print(role)
-    print(user)
+
     if role == 'Admin' and user == 'Doctor':
         User = Doctor.objects.get(id=pk)
     if role == 'Admin' and user == 'Patient':
