@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
   </head>
   <body>
-    <div class="container">
+    <div class="container" style="margin:1rem auto">
       <form action="{% url 'signup' role %}" method="POST">
         <h1 style="text-align: center">Add {{role}}</h1>
         {%if errors%}
@@ -217,6 +217,9 @@
          <button style="margin-left:11rem; width:50%" class="button-34" type="submit">Add {{role}}</button> 
         </div>
       </form>
+      <div style="text-align: center;margin-top: 1rem;">
+        Already have an account? <a style="text-decoration: none;" href="{% url 'signin' role %}">SignIn Now</a>
+      </div>
     </div>
     <script
       src="https://kit.fontawesome.com/e50a128556.js"

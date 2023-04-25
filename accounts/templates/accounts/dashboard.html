@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,22 +6,123 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
   </head>
   <body>
-    {{role}}
-    <div>
-      {%for doctor in doctors%}
-      <p>{{doctor.user.username}}</p>
-      <p>{{doctor.user.first_name}}</p>
-      <p>{{doctor.user.last_name}}</p>
-      <p>{{doctor.user.age}}</p>
-      <p>{{doctor.specialization}}</p>
-      <p>{{doctor.degree}}</p>
-      <h2>Patients</h2>
-      {% for patient in doctor.patient.all%}
-      <p>{{patient.user.username}}</p>
-      <p>{{patient.disease.name}}</p>
-      {% endfor %} {% endfor %}
+    <h1>{{role}} Panel</h1>
+
+    {% if role == 'Admin' %}
+    <div style="display: flex; justify-content: center; margin: 1rem auto">
+      <div class="buttons">
+        <a href="{% url 'signup' 'Doctor' %}"
+          ><button class="button-34">Add Doctor</button></a
+        >
+        <a href="{% url 'signup' 'Patient' %}"
+          ><button class="button-34">Add Patient</button></a
+        >
+        <a href="{% url 'signup' 'Nurse' %}"
+          ><button class="button-34">Add Nurse</button></a
+        >
+      </div>
     </div>
+
+    <div class="grid">
+      <div class="docs">
+        <h2 style="text-align: center">Doctors</h2>
+        {% if doctors %} {%for doctor in doctors%}
+        <div id="user">
+          <p><span>Username</span>: {{doctor.user.username}}</p>
+          <p>
+            <span>Name</span>: {{doctor.user.first_name}}
+            {{doctor.user.last_name}}
+          </p>
+          <p><span>Age</span>: {{doctor.user.age}}</p>
+          <p><span>Specialization</span>: {{doctor.specialization}}</p>
+          <p><span>Degree</span>: {{doctor.degree}}</p>
+          <div style="margin: 0.4rem auto 0.4rem 1.5rem">
+            <a href=""><button class="button-34">Update</button></a>
+            <a href="{% url 'delete' 'Doctor' doctor.id role %}"
+              ><button class="button-34">Delete</button></a
+            >
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
+
+      <div class="patients">
+        <h2 style="text-align: center">Patients</h2>
+        {% if patients %} {%for patient in patients%}
+        <div id="user">
+          <p><span>Username</span>: {{patient.user.username}}</p>
+          <p>
+            <span>Name</span>: {{patient.user.first_name}}
+            {{patient.user.last_name}}
+          </p>
+          <p><span>Age</span>: {{patient.user.age}}</p>
+          <p><span>Mobile Phone</span>: {{patient.mobile_phone}}</p>
+          <p><span>Disease</span>: {{patient.disease.name}}</p>
+          <p><span>Disease Stage</span>: {{patient.disease.stage}}</p>
+          {% if patient.doctor %}
+          <p>
+            <span>Doctor</span>: Dr. {{patient.doctor.user.first_name}}
+            {{patient.doctor.user.last_name}}
+          </p>
+          {% else %}
+          <p><span>Doctor</span>: None</p>
+          {% endif %}
+          <div style="margin: 0.4rem auto 0.4rem 1.5rem">
+            <a href=""><button class="button-34">Update</button></a>
+            <a href="{% url 'delete' 'Patient' patient.id role %}"
+              ><button class="button-34">Delete</button></a
+            >
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
+
+      <div class="nurses">
+        <h2 style="text-align: center">Nurses</h2>
+        {% if nurses %} {%for nurse in nurses%}
+        <div id="user">
+          <p><span>Username</span>: {{nurse.user.username}}</p>
+          <p>
+            <span>Name</span>: {{nurse.user.first_name}}
+            {{nurse.user.last_name}}
+          </p>
+          <p><span>Age</span>: {{nurse.user.age}}</p>
+          <p><span>Mobile Phone</span>: {{nurse.mobile_phone}}</p>
+
+          {% if nurse.doctor %}
+          <p>
+            <span>Assigned To</span>: Dr. {{nurse.doctor.user.first_name}}
+            {{nurse.doctor.user.last_name}}
+          </p>
+          {% else %}
+          <p><span>Assigned To</span>: None</p>
+          {% endif %}
+          <div style="margin: 0.4rem auto 0.4rem 1.5rem">
+            <a href=""><button class="button-34">Update</button></a>
+            <a href="{% url 'delete' 'Nurse' nurse.id role %}"
+              ><button class="button-34">Delete</button></a
+            >
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
+    </div>
+
+    {% endif %}
   </body>
 </html>

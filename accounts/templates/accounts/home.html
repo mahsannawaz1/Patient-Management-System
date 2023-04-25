@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
   </head>
   <body style="background-color: #000; max-height: 100vh">
-    <form style="margin: 18rem 40rem" action="" method="POST">
+    <form style="margin: 5rem 37.5rem" action="" method="POST">
       {% csrf_token %}
       <h1 style="text-align: center">SignUp As</h1>
       <button class="button-34" onclick="setRole('Doctor')">Doctor</button>
@@ -26,6 +26,21 @@
         Next
       </button>
     </form>
+    <div id="signin-links" style="margin: auto 37.5rem">
+      <h1 style="text-align: center">SignIn As</h1>
+      <a style="text-decoration: none" href="{% url 'signin' 'Doctor' %}"
+        ><button class="button-34">Doctor</button></a
+      >
+      <a style="text-decoration: none" href="{% url 'signin' 'Nurse' %}"
+        ><button class="button-34">Nurse</button></a
+      >
+      <a style="text-decoration: none" href="{% url 'signin' 'Patient' %}"
+        ><button class="button-34">Patient</button></a
+      >
+      <a style="text-decoration: none" href="{% url 'signin' 'Admin' %}"
+        ><button class="button-34">Admin</button></a
+      >
+    </div>
 
     <script>
       function setRole(temp) {

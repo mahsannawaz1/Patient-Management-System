@@ -71,6 +71,8 @@ def signup(request, role):
                     user=user, degree=degree, specialization=specialization)
                 user.save()
                 doctor.save()
+                if request.user.is_authenticated and request.user.is_staff:
+                    return redirect('dashboard', 'Admin')
                 return redirect('signin', role)
             else:
                 context = {'first_name': first_name, 'last_name': last_name, 'degree': degree,
@@ -100,7 +102,10 @@ def signup(request, role):
                 user.save()
                 patient.save()
                 disease.save()
+                if request.user.is_authenticated and request.user.is_staff:
+                    return redirect('dashboard', 'Admin')
                 return redirect('signin', role)
+
             else:
                 context = {'first_name': first_name, 'last_name': last_name, 'disease_name': disease_name,
                            'email': email, 'disease_stage': disease_stage, 'age': age, 'username': username, "role": role, 'phone': phone}
@@ -129,6 +134,8 @@ def signup(request, role):
                 nurse = Nurse(doctor=doctor, user=user, mobile_phone=phone)
                 user.save()
                 nurse.save()
+                if request.user.is_authenticated and request.user.is_staff:
+                    return redirect('dashboard', 'Admin')
                 return redirect('signin', role)
             else:
                 context = {'first_name': first_name, 'last_name': last_name,
@@ -175,31 +182,55 @@ def signin(request, role):
     }
 
     if request.method == 'POST':
+
         username = request.POST.get("username")
         password = request.POST.get("password")
         user = authenticate(request, username=username, password=password)
-        if user is not None:
-            print(user)
 
+        if user is not None:
             login(request, user)
             return redirect("dashboard", role)
         else:
-
             context['username'] = username
             context['error'] = 'Incorrect Username or Password'
             return render(request, 'accounts/signin.html', context)
+
     return render(request, 'accounts/signin.html', context)
 
 
 def dashboard(request, role):
-    doctors = Doctor.objects.all()
-    nurses = Nurse.objects.all()
-    patients = Patient.objects.all()
-    context = {
-        'role': role,
-        'doctors': list(doctors),
-        'nurses': list(nurses),
-        'patients': list(patients)
-    }
-    print(list(doctors)[0].clean_fields())
+    if role == 'Admin':
+        doctors = Doctor.objects.all()
+        nurses = Nurse.objects.all()
+        patients = Patient.objects.all()
+
+        context = {
+            'role': role,
+            'doctors': list(doctors),
+            'nurses': list(nurses),
+            'patients': list(patients)
+        }
+
     return render(request, 'accounts/dashboard.html', context)
+
+
+def delete(request, user, pk, role):
+    print(role)
+    print(user)
+    if role == 'Admin' and user == 'Doctor':
+        User = Doctor.objects.get(id=pk)
+    if role == 'Admin' and user == 'Patient':
+        User = Patient.objects.get(id=pk)
+    if role == 'Admin' and user == 'Nurse':
+        User = Nurse.objects.get(id=pk)
+    context = {
+        "role": role,
+        "user_role": user,
+        "User": User
+
+    }
+    if request.method == 'POST':
+        User.delete()
+        return redirect('dashboard', role)
+
+    return render(request, 'accounts/delete.html', context)

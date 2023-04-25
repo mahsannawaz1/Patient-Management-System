@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SignIn</title>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <form action="" method="POST">
+        <h1 style="text-align: center">
+          Are You Sure You Want to delete the {{user_role}} "
+          {{User.user.first_name}} {{User.user.last_name}}"?
+        </h1>
+        {% csrf_token %}
+
+        <div style="display: flex; justify-content: center">
+          <div>
+            <a class="button-34" href="{% url 'dashboard' role %}">No</a>
+            <button class="button-34" type="submit">Yes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

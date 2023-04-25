@@ -16,7 +16,7 @@ class Doctor(models.Model):
     degree = models.CharField(max_length=100)
     specialization = models.CharField(max_length=100)
     user = models.OneToOneField(
-        NewUser, related_name="doctor", on_delete=models.PROTECT)
+        NewUser, related_name="doctor", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
@@ -24,9 +24,9 @@ class Doctor(models.Model):
 
 class Patient(models.Model):
     user = models.OneToOneField(
-        NewUser, related_name="patient", on_delete=models.PROTECT)
+        NewUser, related_name="patient", on_delete=models.CASCADE)
     doctor = models.ForeignKey(
-        Doctor, on_delete=models.PROTECT, related_name='patient')
+        Doctor, on_delete=models.SET_NULL, related_name='patient', blank=True, null=True)
     mobile_phone = models.CharField(max_length=12)
 
     def __str__(self):
@@ -40,13 +40,14 @@ class Disease(models.Model):
         Patient, on_delete=models.CASCADE, related_name='disease')
 
     def __str__(self):
-        return self.patient.user.first_name + " " + self.patient.user.first_name + " Disease"
+        return self.patient.user.first_name + " " + self.patient.user.last_name + " has " + self.name
 
 
 class Nurse(models.Model):
     mobile_phone = models.CharField(max_length=12)
 
-    doctor = models.ForeignKey(Doctor, on_delete=models.PROTECT)
+    doctor = models.ForeignKey(
+        Doctor, on_delete=models.SET_NULL, blank=True, null=True)
     user = models.OneToOneField(NewUser, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -55,7 +56,7 @@ class Nurse(models.Model):
 
 class Admin(models.Model):
     user = models.OneToOneField(
-        NewUser, related_name="admin", on_delete=models.PROTECT)
+        NewUser, related_name="admin", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
