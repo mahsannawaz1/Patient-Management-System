@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SignIn</title>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <form action="" method="POST">
+        <h1 style="text-align: center">Sign In {{role}}</h1>
+        {% csrf_token %} {% if error %}
+        <p
+          style="
+            background-color: #dc3545;
+            color: #fff;
+            margin: 0.5rem 1rem;
+            padding: 0.3rem;
+            border-radius: 4px;
+          "
+        >
+          {{error}}
+        </p>
+        {%endif%}
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{username}}"
+            name="username"
+            id="username"
+            required
+            placeholder="Enter Username"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="password"
+            name="password"
+            id="pass"
+            required
+            placeholder="Enter Password"
+          />
+          <div class="input-icon"><i class="fa fa-key"></i></div>
+        </div>
+        <button class="button-34" type="submit">Login</button>
+      </form>
+    </div>
+  </body>
+</html>

@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Signup</title>
     <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
   </head>
   <body>
@@ -184,9 +184,37 @@
 
         {%endif%}
 
+        {% if role == 'Nurse' %}
+        <div class="input-group input-group-icon">
+          <input
+            type="number"
+            value="{{phone}}"
+            name="phone"
+            id="phone"
+            required
+            maxlength="11"
+           
+            placeholder="Phone Number" 
+            required
+          />
+          <div class="input-icon"><i class="fa-solid fa-mobile"></i></div>
+        </div>
+        <div class="input-group input-group-icon my-select-field">
+          <select  style="padding-left: 5.2rem;" name="doctor" id="docs" required >
+            <option  value="" disabled selected>Select Assigned Doctor</option>
+            {% for doc in docs %}
+           
+            <option value="{{doc}}">{{doc}}</option>
+            {% endfor %}
+          </select>
+           
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+
+        {% endif %}
 
         <div>
-         <button type="submit">Add</button> 
+         <button style="margin-left:11rem; width:50%" class="button-34" type="submit">Add {{role}}</button> 
         </div>
       </form>
     </div>

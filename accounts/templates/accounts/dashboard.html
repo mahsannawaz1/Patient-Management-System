@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    {{role}}
+    <div>
+      {%for doctor in doctors%}
+      <p>{{doctor.user.username}}</p>
+      <p>{{doctor.user.first_name}}</p>
+      <p>{{doctor.user.last_name}}</p>
+      <p>{{doctor.user.age}}</p>
+      <p>{{doctor.specialization}}</p>
+      <p>{{doctor.degree}}</p>
+      <h2>Patients</h2>
+      {% for patient in doctor.patient.all%}
+      <p>{{patient.user.username}}</p>
+      <p>{{patient.disease.name}}</p>
+      {% endfor %} {% endfor %}
+    </div>
+  </body>
+</html>

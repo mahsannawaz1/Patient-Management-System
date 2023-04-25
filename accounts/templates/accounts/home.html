@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -5,21 +6,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
   </head>
-  <body>
-    <form action="" method="POST">
+  <body style="background-color: #000; max-height: 100vh">
+    <form style="margin: 18rem 40rem" action="" method="POST">
       {% csrf_token %}
-
-      <button onclick="setRole('Admin')">Admin</button>
-
-      <button onclick="setRole('Doctor')">Doctor</button>
-
-      <button onclick="setRole('Nurse')">Nurse</button>
-
-      <button onclick="setRole('Patient')">Patient</button>
-
-      <input type="text" name="role" id="role" />
+      <h1 style="text-align: center">SignUp As</h1>
+      <button class="button-34" onclick="setRole('Doctor')">Doctor</button>
+      <button class="button-34" onclick="setRole('Nurse')">Nurse</button>
+      <button class="button-34" onclick="setRole('Patient')">Patient</button>
+      <button class="button-34" onclick="setRole('Admin')">Admin</button>
+      <input type="text" name="role" id="role" hidden />
       <button
+        class="button-34"
+        hidden
         style="cursor: pointer; position: absolute; bottom: 10px; right: 10px"
         type="submit"
       >

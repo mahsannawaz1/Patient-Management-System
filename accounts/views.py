@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import NewUser, Doctor, Patient, Disease
-
+from .models import NewUser, Doctor, Patient, Disease, Nurse, Admin
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import make_password
 # Create your views here.
 
 
@@ -13,7 +14,6 @@ def home(request):
         print('Role:', role)
 
         return redirect('signup', role)
-
     return render(request, 'accounts/home.html')
 
 
@@ -57,7 +57,7 @@ def signup(request, role):
             errors.append('Age must be a Positive Integer')
         if not str(email).endswith('@gmail.com'):
             errors.append('Email Must end with @gmail.com')
-
+        hashed_password = make_password(password1)
         if role == 'Doctor':
 
             degree = request.POST.get("degree")
@@ -66,12 +66,12 @@ def signup(request, role):
             if not errors:
 
                 user = NewUser(
-                    first_name=first_name, last_name=last_name, age=age, email=email, username=username, password=password1, is_doctor=True)
+                    first_name=first_name, last_name=last_name, age=age, email=email, username=username, password=hashed_password, is_doctor=True)
                 doctor = Doctor(
                     user=user, degree=degree, specialization=specialization)
                 user.save()
                 doctor.save()
-                return redirect('home')
+                return redirect('signin', role)
             else:
                 context = {'first_name': first_name, 'last_name': last_name, 'degree': degree,
                            'email': email, 'specialization': specialization, 'age': age, 'username': username, "role": role}
@@ -91,15 +91,16 @@ def signup(request, role):
             if int(disease_stage) < 1 or int(disease_stage) > 5:
                 errors.append('Enter Valid Disease Stage')
             if not errors:
+
                 user = NewUser(
-                    first_name=first_name, last_name=last_name, age=age, email=email, username=username, password=password1, is_patient=True)
+                    first_name=first_name, last_name=last_name, age=age, email=email, username=username, password=hashed_password, is_patient=True)
                 patient = Patient(doctor=doctor, user=user, mobile_phone=phone)
                 disease = Disease(name=disease_name,
                                   stage=disease_stage, patient=patient)
                 user.save()
                 patient.save()
                 disease.save()
-                return redirect('home')
+                return redirect('signin', role)
             else:
                 context = {'first_name': first_name, 'last_name': last_name, 'disease_name': disease_name,
                            'email': email, 'disease_stage': disease_stage, 'age': age, 'username': username, "role": role, 'phone': phone}
@@ -113,6 +114,51 @@ def signup(request, role):
 
                 return render(request, 'accounts/signup.html', context)
 
+        if role == 'Nurse':
+
+            phone = request.POST.get("phone")
+            doctor = request.POST.get("doctor")
+            doctor = str(doctor).split()
+            doctor = Doctor.objects.get(
+                user__first_name=doctor[0], user__last_name=doctor[1])
+
+            if not errors:
+                user = NewUser(
+                    first_name=first_name, last_name=last_name, age=age, email=email, username=username, password=hashed_password, is_nurse=True)
+
+                nurse = Nurse(doctor=doctor, user=user, mobile_phone=phone)
+                user.save()
+                nurse.save()
+                return redirect('signin', role)
+            else:
+                context = {'first_name': first_name, 'last_name': last_name,
+                           'email': email, 'age': age, 'username': username, "role": role, 'phone': phone}
+                context['errors'] = errors
+                doctors = Doctor.objects.all()
+                docs = []
+                for doctor in doctors:
+                    docs.append(
+                        f'{doctor.user.first_name} {doctor.user.last_name}')
+                    context['docs'] = docs
+
+                return render(request, 'accounts/signup.html', context)
+
+        if role == 'Admin':
+            if not errors:
+                user = NewUser(
+                    first_name=first_name, last_name=last_name, age=age, email=email, username=username, password=hashed_password, is_admin=True, is_staff=True)
+                admin = Admin(
+                    user=user)
+                user.save()
+                admin.save()
+                return redirect('signin', role)
+            else:
+                context = {'first_name': first_name, 'last_name': last_name,
+                           'email': email, 'age': age, 'username': username, "role": role}
+                context['errors'] = errors
+
+                return render(request, 'accounts/signup.html', context)
+
     doctors = Doctor.objects.all()
     docs = []
     for doctor in doctors:
@@ -121,3 +167,39 @@ def signup(request, role):
     context['role'] = role
 
     return render(request, 'accounts/signup.html', context)
+
+
+def signin(request, role):
+    context = {
+        'role': role
+    }
+
+    if request.method == 'POST':
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            print(user)
+
+            login(request, user)
+            return redirect("dashboard", role)
+        else:
+
+            context['username'] = username
+            context['error'] = 'Incorrect Username or Password'
+            return render(request, 'accounts/signin.html', context)
+    return render(request, 'accounts/signin.html', context)
+
+
+def dashboard(request, role):
+    doctors = Doctor.objects.all()
+    nurses = Nurse.objects.all()
+    patients = Patient.objects.all()
+    context = {
+        'role': role,
+        'doctors': list(doctors),
+        'nurses': list(nurses),
+        'patients': list(patients)
+    }
+    print(list(doctors)[0].clean_fields())
+    return render(request, 'accounts/dashboard.html', context)
