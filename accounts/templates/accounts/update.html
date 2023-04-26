@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+  </head>
+  <body>
+    <div class="container" style="margin: 1rem auto">
+      <form action="{% url 'update' user_role pk role %}" method="POST">
+        {% csrf_token %}
+        <h1 style="text-align: center">Update {{user_role}}</h1>
+        {%if errors%}
+        <div id="errors">
+          
+            {%for error in errors%}
+            <p style="background-color :#dc3545;color: #fff;margin:0.5rem 1rem; padding:0.3rem;border-radius: 4px;">{{error}}</p>
+            {%endfor%}
+          </ul>
+        </div>
+        {%endif%}
+       
+        <div>
+          <input type="text" hidden name="user" value="{{user}}" />
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{User.user.first_name}}"
+            name="first_name"
+            id="first_name"
+            required
+            placeholder="First Name"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{User.user.last_name}}"
+            name="last_name"
+            id="last_name"
+            required
+            placeholder="Last Name"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{User.user.username}}"
+            name="username"
+            id="username"
+            required
+            placeholder="User Name"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="email"
+            value="{{User.user.email}}"
+            name="email"
+            id="email"
+            placeholder="Email"
+          />
+          <div class="input-icon"><i class="fa fa-envelope"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            min="1"
+            type="number"
+            value="{{User.user.age}}"
+            name="age"
+            id="age"
+            required
+            maxlength="100"
+            placeholder="Age"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+
+        {% if user_role == 'Doctor' %}
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{User.degree}}"
+            name="degree"
+            id="degree"
+            required
+            maxlength="100"
+            placeholder="Degree"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            name="specialization"
+            id="specialization"
+            required
+            maxlength="100"
+            value="{{User.specialization}}"
+            placeholder="Specialization"
+          />
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+        {%endif%} {%if user_role == 'Patient' %}
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{User.disease_name}}"
+            name="disease_name"
+            id="disease_name"
+            required
+            maxlength="100"
+            placeholder="Disease Name"
+            required
+          />
+          <div class="input-icon"><i class="fa-solid fa-disease"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="number"
+            value="{{User.disease_stage}}"
+            name="disease_stage"
+            id="disease_stage"
+            required
+            maxlength="100"
+            placeholder="Disease Stage"
+            required
+          />
+          <div class="input-icon"><i class="fa-solid fa-disease"></i></div>
+        </div>
+        <div class="input-group input-group-icon">
+          <input
+            type="number"
+            value="{{User.phone}}"
+            name="phone"
+            id="phone"
+            required
+            maxlength="11"
+            placeholder="Phone Number"
+            required
+          />
+          <div class="input-icon"><i class="fa-solid fa-mobile"></i></div>
+        </div>
+        <div class="input-group input-group-icon my-select-field">
+          <select style="padding-left: 5.2rem" name="doctor" id="docs" required>
+            <option value="" disabled selected>Select Doctor</option>
+            {% for doc in docs %}
+
+            <option value="{{doc}}">{{doc}}</option>
+            {% endfor %}
+          </select>
+
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+
+        {%endif%} {% if user_role == 'Nurse' %}
+        <div class="input-group input-group-icon">
+          <input
+            type="number"
+            value="{{User.phone}}"
+            name="phone"
+            id="phone"
+            required
+            maxlength="11"
+            placeholder="Phone Number"
+            required
+          />
+          <div class="input-icon"><i class="fa-solid fa-mobile"></i></div>
+        </div>
+        <div class="input-group input-group-icon my-select-field">
+          <select style="padding-left: 5.2rem" name="doctor" id="docs" required>
+            <option value="" disabled selected>Select Assigned Doctor</option>
+            {% for doc in docs %}
+
+            <option value="{{doc}}">{{doc}}</option>
+            {% endfor %}
+          </select>
+
+          <div class="input-icon"><i class="fa fa-user"></i></div>
+        </div>
+
+        {% endif %}
+
+       
+          <button
+            style="margin-left: 11rem; width: 50%"
+            class="button-34"
+            type="submit"
+          >
+            Update
+          </button>
+        
+      </form>
+    </div>
+    <script
+      src="https://kit.fontawesome.com/e50a128556.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

@@ -40,8 +40,10 @@
           <p><span>Specialization</span>: {{doctor.specialization}}</p>
           <p><span>Degree</span>: {{doctor.degree}}</p>
           <div style="margin: 0.4rem auto 0.4rem 1.5rem">
-            <a href=""><button class="button-34">Update</button></a>
-            <a href="{% url 'delete' 'Doctor' doctor.id role %}"
+            <a href="{% url 'update' 'Doctor' doctor.id role %}"
+              ><button class="button-34">Update</button></a
+            >
+            <a href="{% url 'delete' 'Doctor' doctor.user.id role %}"
               ><button class="button-34">Delete</button></a
             >
           </div>
@@ -76,7 +78,7 @@
           {% endif %}
           <div style="margin: 0.4rem auto 0.4rem 1.5rem">
             <a href=""><button class="button-34">Update</button></a>
-            <a href="{% url 'delete' 'Patient' patient.id role %}"
+            <a href="{% url 'delete' 'Patient' patient.user.id role %}"
               ><button class="button-34">Delete</button></a
             >
           </div>
@@ -110,7 +112,7 @@
           {% endif %}
           <div style="margin: 0.4rem auto 0.4rem 1.5rem">
             <a href=""><button class="button-34">Update</button></a>
-            <a href="{% url 'delete' 'Nurse' nurse.id role %}"
+            <a href="{% url 'delete' 'Nurse' nurse.user.id role %}"
               ><button class="button-34">Delete</button></a
             >
           </div>
