@@ -75,6 +75,9 @@ class Medicine(models.Model):
     dose = models.PositiveIntegerField()
     manufacturer = models.CharField(max_length=100)
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
 
 class Prescription(models.Model):
     description = models.TextField()
@@ -85,6 +88,11 @@ class Prescription(models.Model):
     doctor = models.ForeignKey(
         Doctor, on_delete=models.CASCADE, related_name="prescription"
     )
-    medicine = models.ForeignKey(
-        Medicine, on_delete=models.CASCADE, related_name="medicine"
+    medicines = models.ManyToManyField(
+        Medicine, related_name="prescriptions", null=True, blank=True
     )
+
+    def __str__(self) -> str:
+        return (
+            f"{self.doctor.user.first_name} {self.doctor.user.last_name} Prescription"
+        )

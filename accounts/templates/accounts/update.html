@@ -84,6 +84,7 @@
         </div>
 
         {% if user_role == 'Doctor' %}
+
         <div class="input-group input-group-icon">
           <input
             type="text"
@@ -108,11 +109,13 @@
           />
           <div class="input-icon"><i class="fa fa-user"></i></div>
         </div>
-        {%endif%} {%if user_role == 'Patient' %}
+        {%endif%}
+        
+        {%if user_role == 'Patient' %}
         <div class="input-group input-group-icon">
           <input
             type="text"
-            value="{{User.disease_name}}"
+            value="{{User.disease.name}}"
             name="disease_name"
             id="disease_name"
             required
@@ -125,7 +128,7 @@
         <div class="input-group input-group-icon">
           <input
             type="number"
-            value="{{User.disease_stage}}"
+            value="{{User.disease.stage}}"
             name="disease_stage"
             id="disease_stage"
             required
@@ -138,7 +141,7 @@
         <div class="input-group input-group-icon">
           <input
             type="number"
-            value="{{User.phone}}"
+            value="{{User.mobile_phone}}"
             name="phone"
             id="phone"
             required
@@ -150,21 +153,32 @@
         </div>
         <div class="input-group input-group-icon my-select-field">
           <select style="padding-left: 5.2rem" name="doctor" id="docs" required>
+
+            {% if user.is_authenticated and user.is_staff %}
             <option value="" disabled selected>Select Doctor</option>
             {% for doc in docs %}
-
             <option value="{{doc}}">{{doc}}</option>
             {% endfor %}
+
+            {% elif user.is_authenticated and not user.is_staff %}
+            <option value="{{request.user}}" disabled selected>{{request.user}}</option>
+            {% endif %}
+
           </select>
 
           <div class="input-icon"><i class="fa fa-user"></i></div>
         </div>
 
-        {%endif%} {% if user_role == 'Nurse' %}
+        {%endif%} 
+        
+        
+        
+        {% if user_role == 'Nurse' %}
+
         <div class="input-group input-group-icon">
           <input
             type="number"
-            value="{{User.phone}}"
+            value="{{User.mobile_phone}}"
             name="phone"
             id="phone"
             required
@@ -176,16 +190,17 @@
         </div>
         <div class="input-group input-group-icon my-select-field">
           <select style="padding-left: 5.2rem" name="doctor" id="docs" required>
+            {% if user.is_authenticated and user.is_staff %}
             <option value="" disabled selected>Select Assigned Doctor</option>
             {% for doc in docs %}
-
             <option value="{{doc}}">{{doc}}</option>
             {% endfor %}
+            {% elif user.is_authenticated and not user.is_staff %}
+            <option value="{{request.user}}" disabled selected>{{request.user}}</option>
+            {% endif %}
           </select>
-
           <div class="input-icon"><i class="fa fa-user"></i></div>
         </div>
-
         {% endif %}
 
        

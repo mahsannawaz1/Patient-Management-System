@@ -1,5 +1,14 @@
 from django.shortcuts import render, redirect
-from .models import NewUser, Doctor, Patient, Disease, Nurse, Admin
+from .models import (
+    NewUser,
+    Doctor,
+    Patient,
+    Disease,
+    Nurse,
+    Admin,
+    Prescription,
+    Medicine,
+)
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 
@@ -11,8 +20,6 @@ def home(request):
     context = {}
     if request.method == "POST":
         role = request.POST.get("role")
-
-        print("Role:", role)
 
         return redirect("signup", role)
     return render(request, "accounts/home.html")
@@ -123,9 +130,15 @@ def signup(request, role):
                 user.save()
                 patient.save()
                 disease.save()
-                if request.user.is_authenticated and request.user.is_staff:
-                    return redirect("dashboard", "Admin")
-                return redirect("signin", role)
+                if request.user.is_authenticated:
+                    new_user = NewUser.objects.get(id=request.user.id)
+
+                    if new_user.is_admin:
+                        return redirect("dashboard", "Admin")
+                    elif new_user.is_doctor:
+                        return redirect("dashboard", "Doctor")
+                else:
+                    return redirect("signin", role)
 
             else:
                 context = {
@@ -170,9 +183,16 @@ def signup(request, role):
                 nurse = Nurse(doctor=doctor, user=user, mobile_phone=phone)
                 user.save()
                 nurse.save()
-                if request.user.is_authenticated and request.user.is_staff:
-                    return redirect("dashboard", "Admin")
-                return redirect("signin", role)
+
+                if request.user.is_authenticated:
+                    new_user = NewUser.objects.get(id=request.user.id)
+
+                    if new_user.is_admin:
+                        return redirect("dashboard", "Admin")
+                    elif new_user.is_doctor:
+                        return redirect("dashboard", "Doctor")
+                else:
+                    return redirect("signin", role)
             else:
                 context = {
                     "first_name": first_name,
@@ -255,10 +275,19 @@ def dashboard(request, role):
         doctors = Doctor.objects.all()
         nurses = Nurse.objects.all()
         patients = Patient.objects.all()
-
         context = {
             "role": role,
             "doctors": list(doctors),
+            "nurses": list(nurses),
+            "patients": list(patients),
+        }
+    if role == "Doctor":
+        doctor = Doctor.objects.get(user=request.user)
+        nurses = Nurse.objects.filter(doctor=doctor)
+        patients = Patient.objects.filter(doctor=doctor)
+        context = {
+            "doctor": doctor,
+            "role": role,
             "nurses": list(nurses),
             "patients": list(patients),
         }
@@ -270,9 +299,9 @@ def delete(request, user, pk, role):
     if role == "Admin" and user == "Doctor":
         User = NewUser.objects.get(id=pk)
 
-    if role == "Admin" and user == "Patient":
+    if (role == "Admin" or role == "Doctor") and user == "Patient":
         User = NewUser.objects.get(id=pk)
-    if role == "Admin" and user == "Nurse":
+    if (role == "Admin" or role == "Doctor") and user == "Nurse":
         User = NewUser.objects.get(id=pk)
     context = {"role": role, "user_role": user, "User": User}
     if request.method == "POST":
@@ -289,18 +318,15 @@ def update(request, user, pk, role):
     if role == "Admin" and user == "Doctor":
         User = Doctor.objects.get(id=pk)
 
-    if role == "Admin" and user == "Patient":
+    if (role == "Admin" or role == "Doctor") and user == "Patient":
         User = Patient.objects.get(id=pk)
 
-    if role == "Admin" and user == "Nurse":
+    if (role == "Admin" or role == "Doctor") and user == "Nurse":
         User = Nurse.objects.get(id=pk)
-    print(User.user.first_name)
-    print(User.user.last_name)
+
     if request.method == "POST":
         first_name = request.POST.get("first_name")
-
         last_name = request.POST.get("last_name")
-
         username = request.POST.get("username")
         age = request.POST.get("age")
         email = request.POST.get("email")
@@ -319,7 +345,56 @@ def update(request, user, pk, role):
             newuser.save()
             User.save()
 
+        if user == "Patient":
+            disease_name = request.POST.get("disease_name")
+            disease_stage = request.POST.get("disease_stage")
+            phone = request.POST.get("phone")
+            doctor = request.POST.get("doctor")
+            doctor = str(doctor)
+
+            doctor = Doctor.objects.get(patient__id=pk)
+            newuser = NewUser.objects.get(patient__id=pk)
+            disease = Disease.objects.get(patient__id=pk)
+
+            newuser.first_name = first_name
+            newuser.last_name = last_name
+            newuser.username = username
+            newuser.email = email
+            newuser.age = age
+
+            disease.name = disease_name
+            disease.stage = disease_stage
+
+            User.mobile_phone = phone
+            User.disease = disease
+            User.doctor = doctor
+
+            disease.save()
+            newuser.save()
+            User.save()
+
+        if user == "Nurse":
+            phone = request.POST.get("phone")
+            doctor = request.POST.get("doctor")
+            doctor = str(doctor)
+
+            doctor = Doctor.objects.get(nurse__id=pk)
+            newuser = NewUser.objects.get(nurse__id=pk)
+
+            newuser.first_name = first_name
+            newuser.last_name = last_name
+            newuser.username = username
+            newuser.email = email
+            newuser.age = age
+
+            User.mobile_phone = phone
+            User.doctor = doctor
+
+            newuser.save()
+            User.save()
+
         return redirect("dashboard", role)
+
     context = {
         "role": role,
         "user_role": user,
@@ -327,4 +402,61 @@ def update(request, user, pk, role):
         "docs": list(docs),
         "pk": pk,
     }
+
     return render(request, "accounts/update.html", context)
+
+
+def addPrescription(request, pk):
+    if request.user.is_authenticated and request.user.is_staff:
+        doc = Doctor.objects.get(id=pk)
+    elif request.user.is_authenticated and not request.user.is_staff:
+        new_user = NewUser.objects.get(id=pk)
+        doc = Doctor.objects.get(user=new_user)
+    num_of_meds = 3
+    errors = []
+    patients = Patient.objects.filter(doctor=doc)
+    context = {"patients": list(patients), "num": range(1, num_of_meds + 1)}
+
+    if request.method == "POST":
+        description = request.POST.get("description")
+        patient = request.POST.get("patient")
+        patient = str(patient)
+        pat = Patient.objects.get(user__username=patient)
+
+        medicines = []
+
+        for i in range(1, num_of_meds + 1):
+            medicine_name = request.POST.get(f"medicine_name_{i}")
+            medicine_dose = request.POST.get(f"medicine_dose_{i}")
+            medicine_manufacturer = request.POST.get(f"medicine_manufacturer_{i}")
+
+            if medicine_name and medicine_dose and medicine_manufacturer:
+                medicine = Medicine(
+                    name=medicine_name,
+                    dose=medicine_dose,
+                    manufacturer=medicine_manufacturer,
+                )
+                medicine.save()
+                medicines.append(medicine)
+        if medicines:
+            prescription = Prescription.objects.create(
+                patient=pat, doctor=doc, description=description
+            )
+            if len(medicines) == 1:
+                prescription.medicines.add(medicines[0])
+            elif len(medicines) == 2:
+                prescription.medicines.add(medicines[0], medicines[1])
+            else:
+                prescription.medicines.add(medicines[0], medicines[1], medicines[2])
+
+            if request.user.is_authenticated and request.user.is_staff:
+                return redirect("dashboard", "Admin")
+            elif request.user.is_authenticated and not request.user.is_staff:
+                return redirect("dashboard", "Doctor")
+
+        else:
+            errors.append(" Please Add atleast 1 Medicine")
+            context["errors"] = errors
+            return render(request, "accounts/add_prescription.html", context)
+
+    return render(request, "accounts/add_prescription.html", context)
