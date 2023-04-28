@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from .models import (
     NewUser,
     Doctor,
@@ -9,7 +9,7 @@ from .models import (
     Prescription,
     Medicine,
 )
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 
 
@@ -270,13 +270,20 @@ def signin(request, role):
     return render(request, "accounts/signin.html", context)
 
 
+def loggingout(request):
+    logout(request)
+    return redirect("/")
+
+
 def dashboard(request, role):
     if role == "Admin":
+        medicines = Medicine.objects.all()
         doctors = Doctor.objects.all()
         nurses = Nurse.objects.all()
         patients = Patient.objects.all()
         context = {
             "role": role,
+            "medicines": list(medicines),
             "doctors": list(doctors),
             "nurses": list(nurses),
             "patients": list(patients),
@@ -304,7 +311,16 @@ def dashboard(request, role):
             "role": role,
             "patients": list(patients),
         }
-
+    if role == "Patient":
+        patient = Patient.objects.get(user=request.user)
+        doctor = Doctor.objects.get(patient=patient)
+        prescriptions = Prescription.objects.filter(patient=patient)
+        context = {
+            "prescriptions": list(prescriptions),
+            "patient": patient,
+            "role": role,
+            "doctor": doctor,
+        }
     return render(request, "accounts/dashboard.html", context)
 
 

@@ -8,8 +8,13 @@
     <title>Document</title>
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
   </head>
-  <body>
+  <body style="position: relative">
     <h1>{{role}} Panel</h1>
+
+    <div style="position: absolute; top: 20px; right: 15px">
+      <a href=""><button class="button-34">Profile</button></a>
+      <a href="{% url 'logout' %}"><button class="button-34">Logout</button></a>
+    </div>
 
     {% if role == 'Admin' %}
 
@@ -136,6 +141,32 @@
             </div>
           </div>
         </div>
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
+      <div class="medicines">
+        <h2 style="text-align: center">Medicines</h2>
+        {% if medicines %} {%for medicine in medicines%}
+        <div id="user">
+          <p><span>Name</span>: {{medicine.name}}</p>
+          <p><span>Dose</span>: {{medicine.dose}} mg</p>
+          <p><span>Manufacturer</span>: {{medicine.manufacturer}}</p>
+          <div style="display: flex; justify-content: center">
+            <div>
+              <a href="{% url 'update-medicine' role medicine.id %}"
+                ><button class="button-34">Update</button></a
+              >
+
+              <a href="{% url 'delete-medicine' role medicine.id %}"
+                ><button class="button-34">Delete</button></a
+              >
+            </div>
+          </div>
+        </div>
+
         {% endfor %} {% else %}
         <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
           No Data Found
@@ -336,6 +367,51 @@
       </div>
     </div>
 
+    {% elif role == 'Patient' %}
+    <div class="prescriptions">
+      <h2 style="text-align: center; margin-top: 1rem">Prescriptions</h2>
+      {% if prescriptions %} {%for prescription in prescriptions%}
+      <div id="user">
+        <p>
+          <span>Doctor Name</span>:Dr. {{prescription.doctor.user.first_name}}
+          {{prescription.doctor.user.first_name}}
+        </p>
+        <p>
+          <span>Patient Name</span>: {{prescription.patient.user.first_name}}
+          {{prescription.doctor.user.first_name}}
+        </p>
+        <p><span>Date</span>: {{prescription.date_created}}</p>
+        <p><span>Description</span>: {{prescription.description}}</p>
+        <h3 style="text-align: center; margin: 0.8rem auto; color: #198754">
+          <i class="fa-sharp fa-solid fa-tablets"></i>
+          Recommended Medicines
+        </h3>
+
+        <ul style="list-style-type: none">
+          {% for medicine in prescription.medicines.all %}
+          <li>
+            <span>Medicine Name</span>: {{ medicine.name }}
+            <span style="margin-left: 0.3rem">({{medicine.dose}} mg)</span>
+          </li>
+
+          {% empty %}
+          <li>No medicines found for this prescription.</li>
+          {% endfor %}
+        </ul>
+        <div style="display: flex; justify-content: center"></div>
+      </div>
+
+      {% endfor %} {% else %}
+      <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+        No Data Found
+      </h3>
+      {% endif %}
+    </div>
+
     {% endif %}
+    <script
+      src="https://kit.fontawesome.com/e50a128556.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

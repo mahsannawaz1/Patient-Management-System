@@ -28,7 +28,14 @@ h1{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
-
+.prescriptions {
+  margin:auto 23rem;
+  
+  
+}
+.prescriptions #user{
+  padding:1rem;
+}
 @media screen and (max-width:1039px){
   .grid{
     display: grid;
