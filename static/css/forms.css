@@ -168,3 +168,6 @@ input[type=number] {
   word-break: break-word;
   border: 0;
 }
+a{
+  text-decoration: none;
+}

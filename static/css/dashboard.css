@@ -17,24 +17,40 @@ body {
   background-color: #e3e3e3;
 }
 h1{
+  font-size: 3.5rem;
   text-align: center;
   color: #f0a500;
 }
+.docs,.patients,.nurses{
+  border-right: 1px solid #f0a500;
+}
 .grid{
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+@media screen and (max-width:1039px){
+  .grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+    
+  }
+  .docs,
+  .patients,.nurses{
+    border-right:none;
+  }
 }
 .grid div{
  
   padding:1rem;
   
 }
+
 span{
   font-weight: 600;
 }
-.docs,.patients{
-  border-right: 1px solid black;
-}
+
 #user{
   margin:0.5rem 3rem;
   background-color: #fff;
@@ -61,4 +77,7 @@ span{
   word-break: break-word;
   border: 0;
   
+}
+a{
+  text-decoration: none;
 }

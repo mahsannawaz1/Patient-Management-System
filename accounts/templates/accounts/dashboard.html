@@ -12,8 +12,12 @@
     <h1>{{role}} Panel</h1>
 
     {% if role == 'Admin' %}
+
     <div style="display: flex; justify-content: center; margin: 1rem auto">
       <div class="buttons">
+        <a href="{% url 'add-medicine' 'Admin' %}"
+          ><button class="button-34">Add Medicine</button></a
+        >
         <a href="{% url 'signup' 'Doctor' %}"
           ><button class="button-34">Add Doctor</button></a
         >
@@ -40,7 +44,7 @@
           <p><span>Specialization</span>: {{doctor.specialization}}</p>
           <p><span>Degree</span>: {{doctor.degree}}</p>
           <div style="display: flex; justify-content: center; flex-wrap: wrap">
-            <div>
+            <div style="margin-left: 2rem">
               <a href="{% url 'update' 'Doctor' doctor.id role %}"
                 ><button class="button-34">Update</button></a
               >
@@ -84,7 +88,7 @@
           <p><span>Doctor</span>: None</p>
           {% endif %}
           <div style="display: flex; justify-content: center">
-            <div style="margin-left: 4rem">
+            <div>
               <a href="{% url 'update' 'Patient' patient.id role %}"
                 ><button class="button-34">Update</button></a
               >
@@ -122,7 +126,7 @@
           <p><span>Assigned To</span>: None</p>
           {% endif %}
           <div style="display: flex; justify-content: center">
-            <div style="margin-left: 4rem">
+            <div>
               <a href="{% url 'update' 'Nurse' nurse.id role %}"
                 ><button class="button-34">Update</button></a
               >
@@ -141,6 +145,7 @@
     </div>
 
     {% elif role == 'Doctor' %}
+
     <div style="display: flex; justify-content: center; margin: 1rem auto">
       <div class="buttons">
         <a href="{% url 'signup' 'Patient' %}"
@@ -148,6 +153,9 @@
         >
         <a href="{% url 'signup' 'Nurse' %}"
           ><button class="button-34">Add Nurse</button></a
+        >
+        <a href="{% url 'add-medicine' 'Doctor' %}"
+          ><button class="button-34">Add Medicine</button></a
         >
         <a href="{% url 'add-prescription' user.id %}"
           ><button style="margin: 0.5rem 0.5rem" class="button-34">
@@ -217,7 +225,7 @@
           <p><span>Assigned To</span>: None</p>
           {% endif %}
           <div style="display: flex; justify-content: center">
-            <div>
+            <div style="margin: none">
               <a href="{% url 'update' 'Nurse' nurse.id role %}"
                 ><button class="button-34">Update</button></a
               >
@@ -233,7 +241,101 @@
         </h3>
         {% endif %}
       </div>
+
+      <div class="medicines">
+        <h2 style="text-align: center">Medicines</h2>
+        {% if medicines %} {%for medicine in medicines%}
+        <div id="user">
+          <p><span>Name</span>: {{medicine.name}}</p>
+          <p><span>Dose</span>: {{medicine.dose}} mg</p>
+          <p><span>Manufacturer</span>: {{medicine.manufacturer}}</p>
+          <div style="display: flex; justify-content: center">
+            <div>
+              <a href="{% url 'update-medicine' role medicine.id %}"
+                ><button class="button-34">Update</button></a
+              >
+
+              <a href="{% url 'delete-medicine' role medicine.id %}"
+                ><button class="button-34">Delete</button></a
+              >
+            </div>
+          </div>
+        </div>
+
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
     </div>
+
+    {% elif role == 'Nurse' %}
+
+    <div style="display: flex; justify-content: center; margin: 1rem auto">
+      <a href="{% url 'add-medicine' role %}"
+        ><button class="button-34">Add Medicine</button></a
+      >
+    </div>
+
+    <div class="grid" style="justify-content: center">
+      <div class="patients">
+        <h2 style="text-align: center">Assigned Patients</h2>
+        {% if patients %} {%for patient in patients%}
+        <div id="user">
+          <p><span>Username</span>: {{patient.user.username}}</p>
+          <p>
+            <span>Name</span>: {{patient.user.first_name}}
+            {{patient.user.last_name}}
+          </p>
+          <p><span>Age</span>: {{patient.user.age}}</p>
+          <p><span>Mobile Phone</span>: {{patient.mobile_phone}}</p>
+          <p><span>Disease</span>: {{patient.disease.name}}</p>
+          <p><span>Disease Stage</span>: {{patient.disease.stage}}</p>
+          {% if patient.doctor %}
+          <p>
+            <span>Doctor</span>: Dr. {{patient.doctor.user.first_name}}
+            {{patient.doctor.user.last_name}}
+          </p>
+          {% else %}
+          <p><span>Doctor</span>: None</p>
+          {% endif %}
+        </div>
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
+
+      <div class="medicines">
+        <h2 style="text-align: center">Medicines</h2>
+        {% if medicines %} {%for medicine in medicines%}
+        <div id="user">
+          <p><span>Name</span>: {{medicine.name}}</p>
+          <p><span>Dose</span>: {{medicine.dose}} mg</p>
+          <p><span>Manufacturer</span>: {{medicine.manufacturer}}</p>
+          <div style="display: flex; justify-content: center">
+            <div>
+              <a href="{% url 'update-medicine' role medicine.id %}"
+                ><button class="button-34">Update</button></a
+              >
+
+              <a href="{% url 'delete-medicine' role medicine.id %}"
+                ><button class="button-34">Delete</button></a
+              >
+            </div>
+          </div>
+        </div>
+
+        {% endfor %} {% else %}
+        <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">
+          No Data Found
+        </h3>
+        {% endif %}
+      </div>
+    </div>
+
     {% endif %}
   </body>
 </html>

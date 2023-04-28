@@ -282,13 +282,26 @@ def dashboard(request, role):
             "patients": list(patients),
         }
     if role == "Doctor":
+        medicines = Medicine.objects.all()
         doctor = Doctor.objects.get(user=request.user)
         nurses = Nurse.objects.filter(doctor=doctor)
         patients = Patient.objects.filter(doctor=doctor)
         context = {
+            "medicines": list(medicines),
             "doctor": doctor,
             "role": role,
             "nurses": list(nurses),
+            "patients": list(patients),
+        }
+    if role == "Nurse":
+        medicines = Medicine.objects.all()
+        nurse = Nurse.objects.get(user=request.user)
+        doctor = Doctor.objects.get(nurse=nurse)
+        patients = Patient.objects.filter(doctor=doctor)
+        context = {
+            "medicines": list(medicines),
+            "doctor": doctor,
+            "role": role,
             "patients": list(patients),
         }
 
@@ -460,3 +473,89 @@ def addPrescription(request, pk):
             return render(request, "accounts/add_prescription.html", context)
 
     return render(request, "accounts/add_prescription.html", context)
+
+
+def addMedicine(request, role):
+    num_of_meds = 3
+    errors = []
+    context = {"num": range(1, num_of_meds + 1)}
+    if request.method == "POST":
+        medicines = []
+        for i in range(1, num_of_meds + 1):
+            medicine_name = request.POST.get(f"medicine_name_{i}")
+            medicine_dose = request.POST.get(f"medicine_dose_{i}")
+            medicine_manufacturer = request.POST.get(f"medicine_manufacturer_{i}")
+
+            if medicine_name and medicine_dose and medicine_manufacturer:
+                medicine = Medicine.objects.create(
+                    name=medicine_name,
+                    dose=medicine_dose,
+                    manufacturer=medicine_manufacturer,
+                )
+
+                medicines.append(medicine)
+            elif (
+                medicine_name is ""
+                and medicine_dose is ""
+                and medicine_manufacturer is ""
+            ):
+                pass
+            elif (
+                medicine_name is ""
+                or medicine_dose is ""
+                or medicine_manufacturer is ""
+            ):
+                errors.append(f"Please Fill out every field for Medicine {i}")
+
+        if medicines:
+            for medicine in medicines:
+                medicine.save()
+            return redirect("dashboard", role)
+        else:
+            errors.append("Please Add atlease 1 Medicine")
+
+            context["errors"] = errors
+
+            return render(request, "accounts/add_medicine.html", context)
+
+    return render(request, "accounts/add_medicine.html", context)
+
+
+def updateMedicine(request, role, pk):
+    errors = []
+    medicine = Medicine.objects.get(id=pk)
+    context = {}
+    context["medicine_name"] = medicine.name
+    context["medicine_dose"] = medicine.dose
+    context["medicine_manufacturer"] = medicine.manufacturer
+    if request.method == "POST":
+        medicine_name = request.POST.get("medicine_name")
+        medicine_dose = request.POST.get("medicine_dose")
+        medicine_manufacturer = request.POST.get("medicine_manufacturer")
+        if medicine_name and medicine_dose and medicine_manufacturer:
+            medicine.name = medicine_name
+            medicine.dose = medicine_dose
+            medicine.manufacturer = medicine_manufacturer
+            medicine.save()
+            return redirect("dashboard", role)
+
+        elif medicine_name is "" or medicine_dose is "" or medicine_manufacturer is "":
+            errors.append("Please Fill out all fields")
+
+        if errors:
+            context["errors"] = errors
+            context["medicine_name"] = medicine_name
+            context["medicine_dost"] = medicine_dose
+            context["medicine_manufacturer"] = medicine_manufacturer
+            return render(request, "accounts/add_medicine.html", context)
+
+    return render(request, "accounts/update_medicine.html", context)
+
+
+def deleteMedicine(request, role, pk):
+    medicine = Medicine.objects.get(id=pk)
+    context = {"medicine": medicine, "role": role}
+    if request.method == "POST":
+        medicine.delete()
+        return redirect("dashboard", role)
+    return render(request, "accounts/delete_medicine.html", context)

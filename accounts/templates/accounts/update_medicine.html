@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Update | Medicine</title>
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+  </head>
+  <body>
+    <div class="container" style="margin: 1rem auto">
+      <form action="" method="POST">
+        <h1 style="text-align: center">Update Medicine</h1>
+
+        {% csrf_token %} 
+        
+        {%if errors%}
+        <div id="errors">
+          
+            {%for error in errors%}
+            <p style="background-color :#dc3545;color: #fff;margin:0.5rem 1rem; padding:0.3rem;border-radius: 4px;">{{error}}</p>
+            {%endfor%}
+          </ul>
+        </div>
+        {% endif %}
+        
+        
+        
+       
+
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{medicine_name}}"
+            name="medicine_name"
+            id="medicine_name"
+            placeholder="Medicine Name"
+          />
+          <div class="input-icon">
+            <i class="fa-sharp fa-solid fa-tablets"></i>
+          </div>
+        </div>
+
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{medicine_dose}}"
+            name="medicine_dose"
+            id="medicine_dose"
+            placeholder="Medicine Dose"
+          />
+          <div class="input-icon">
+            <i class="fa-solid fa-syringe"></i>
+          </div>
+        </div>
+
+        <div class="input-group input-group-icon">
+          <input
+            type="text"
+            value="{{medicine_manufacturer}}"
+            name="medicine_manufacturer"
+            id="medicine_manufacturer"
+            placeholder="Medicine Manufacturer "
+          />
+          <div class="input-icon">
+            <i class="fa-solid fa-syringe"></i>
+          </div>
+        </div>
+
+        <div>
+          <button
+            style="margin-left: 11rem; width: 50%"
+            class="button-34"
+            type="submit"
+          >
+            Update Medicine
+          </button>
+        </div>
+      </form>
+    </div>
+    <script
+      src="https://kit.fontawesome.com/e50a128556.js"
+      crossorigin="anonymous"
+    ></script>
+    <script></script>
+  </body>
+</html>
