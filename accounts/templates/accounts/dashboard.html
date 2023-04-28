@@ -12,7 +12,9 @@
     <h1>{{role}} Panel</h1>
 
     <div style="position: absolute; top: 20px; right: 15px">
-      <a href=""><button class="button-34">Profile</button></a>
+      <a href="{% url 'profile' request.user.id role %}"
+        ><button class="button-34">Profile</button></a
+      >
       <a href="{% url 'logout' %}"><button class="button-34">Logout</button></a>
     </div>
 

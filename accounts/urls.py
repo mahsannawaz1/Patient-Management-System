@@ -11,6 +11,7 @@ from .views import (
     updateMedicine,
     deleteMedicine,
     loggingout,
+    showProfile,
 )
 
 urlpatterns = [
@@ -25,4 +26,5 @@ urlpatterns = [
     path("addMedicine/<str:role>", addMedicine, name="add-medicine"),
     path("addMedicine/<str:role>/<str:pk>", updateMedicine, name="update-medicine"),
     path("deleteMedicine/<str:role>/<str:pk>", deleteMedicine, name="delete-medicine"),
+    path("profile/<str:pk>/<str:role>/", showProfile, name="profile"),
 ]

@@ -8,6 +8,7 @@ from .models import (
     Admin,
     Prescription,
     Medicine,
+    Address,
 )
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
@@ -102,14 +103,20 @@ def signup(request, role):
                 return render(request, "accounts/signup.html", context)
 
         if role == "Patient":
+            if request.user.is_authenticated and request.user.is_staff:
+                doctor = request.POST.get("doctor")
+                doctor = str(doctor).split()
+                doctor = Doctor.objects.get(
+                    user__first_name=doctor[0], user__last_name=doctor[1]
+                )
+
+            city = request.POST.get("address_city")
+            state = request.POST.get("address_state")
+            country = request.POST.get("address_country")
+            house_address = request.POST.get("address")
             disease_name = request.POST.get("disease_name")
             disease_stage = request.POST.get("disease_stage")
             phone = request.POST.get("phone")
-            doctor = request.POST.get("doctor")
-            doctor = str(doctor).split()
-            doctor = Doctor.objects.get(
-                user__first_name=doctor[0], user__last_name=doctor[1]
-            )
 
             if int(disease_stage) < 1 or int(disease_stage) > 5:
                 errors.append("Enter Valid Disease Stage")
@@ -123,12 +130,27 @@ def signup(request, role):
                     password=hashed_password,
                     is_patient=True,
                 )
-                patient = Patient(doctor=doctor, user=user, mobile_phone=phone)
+                address = Address(
+                    city=city, state=state, country=country, house_address=house_address
+                )
+                new_user = NewUser.objects.get(id=request.user.id)
+                if new_user.is_admin:
+                    patient = Patient(
+                        doctor=doctor, user=user, mobile_phone=phone, address=address
+                    )
+                elif new_user.is_doctor:
+                    patient = Patient(
+                        doctor=new_user.doctor,
+                        user=user,
+                        mobile_phone=phone,
+                        address=address,
+                    )
                 disease = Disease(
                     name=disease_name, stage=disease_stage, patient=patient
                 )
                 user.save()
                 patient.save()
+                address.save()
                 disease.save()
                 if request.user.is_authenticated:
                     new_user = NewUser.objects.get(id=request.user.id)
@@ -151,23 +173,33 @@ def signup(request, role):
                     "username": username,
                     "role": role,
                     "phone": phone,
+                    "address_city": city,
+                    "address_state": state,
+                    "address_country": country,
+                    "address": house_address,
                 }
                 context["errors"] = errors
-                doctors = Doctor.objects.all()
-                docs = []
-                for doctor in doctors:
-                    docs.append(f"{doctor.user.first_name} {doctor.user.last_name}")
-                    context["docs"] = docs
+                if user.is_authenticated:
+                    new_user = NewUser.objects.get(id=request.user.id)
+                    if new_user.is_admin:
+                        doctors = Doctor.objects.all()
+                        docs = []
+                        for doctor in doctors:
+                            docs.append(
+                                f"{doctor.user.first_name} {doctor.user.last_name}"
+                            )
+                        context["docs"] = docs
 
                 return render(request, "accounts/signup.html", context)
 
         if role == "Nurse":
             phone = request.POST.get("phone")
-            doctor = request.POST.get("doctor")
-            doctor = str(doctor).split()
-            doctor = Doctor.objects.get(
-                user__first_name=doctor[0], user__last_name=doctor[1]
-            )
+            if request.user.is_authenticated and request.user.is_staff:
+                doctor = request.POST.get("doctor")
+                doctor = str(doctor).split()
+                doctor = Doctor.objects.get(
+                    user__first_name=doctor[0], user__last_name=doctor[1]
+                )
 
             if not errors:
                 user = NewUser(
@@ -179,8 +211,11 @@ def signup(request, role):
                     password=hashed_password,
                     is_nurse=True,
                 )
-
-                nurse = Nurse(doctor=doctor, user=user, mobile_phone=phone)
+                new_user = NewUser.objects.get(id=request.user.id)
+                if new_user.is_admin:
+                    nurse = Nurse(doctor=doctor, user=user, mobile_phone=phone)
+                elif new_user.is_doctor:
+                    nurse = Nurse(doctor=new_user.doctor, user=user, mobile_phone=phone)
                 user.save()
                 nurse.save()
 
@@ -246,6 +281,7 @@ def signup(request, role):
     for doctor in doctors:
         docs.append(f"{doctor.user.first_name} {doctor.user.last_name}")
     context["docs"] = docs
+
     context["role"] = role
 
     return render(request, "accounts/signup.html", context)
@@ -422,7 +458,10 @@ def update(request, user, pk, role):
             newuser.save()
             User.save()
 
-        return redirect("dashboard", role)
+        if request.user.is_authenticated:
+            return redirect("dashboard", user)
+        elif request.user.is_staff and request.user.is_authenticated:
+            return redirect("dashboard", "Admin")
 
     context = {
         "role": role,
@@ -575,3 +614,17 @@ def deleteMedicine(request, role, pk):
         medicine.delete()
         return redirect("dashboard", role)
     return render(request, "accounts/delete_medicine.html", context)
+
+
+def showProfile(request, pk, role):
+    newuser = NewUser.objects.get(id=pk)
+    if role == "Admin":
+        user = Admin.objects.get(user=newuser)
+    elif role == "Doctor":
+        user = Doctor.objects.get(user=newuser)
+    elif role == "Patient":
+        user = Patient.objects.get(user=newuser)
+    elif role == "Nurse":
+        user = Nurse.objects.get(user=newuser)
+    context = {"role": role, "user": user}
+    return render(request, "accounts/profile.html", context)

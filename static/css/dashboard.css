@@ -72,7 +72,7 @@ span{
   cursor: pointer;
   font-family: Inter,Helvetica,"Apple Color Emoji","Segoe UI Emoji",NotoColorEmoji,"Noto Color Emoji","Segoe UI Symbol","Android Emoji",EmojiSymbols,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",sans-serif;
   font-size: 16px;
- 
+ font-weight: 600;
   line-height: 24px;
   opacity: 1;
   outline: 0 solid transparent;
@@ -87,4 +87,16 @@ span{
 }
 a{
   text-decoration: none;
+}
+.profile{
+  margin-top:2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+.profile div{
+  border-radius: 8px;
+  padding:1.5rem;
+  background-color: #fff;
 }

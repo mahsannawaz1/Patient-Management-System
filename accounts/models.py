@@ -36,6 +36,24 @@ class Patient(models.Model):
         return self.user.username
 
 
+class Address(models.Model):
+    city = models.CharField(max_length=100, default="-", blank=True, null=True)
+    state = models.CharField(max_length=100, default="-", blank=True, null=True)
+    country = models.CharField(max_length=100, default="-", blank=True, null=True)
+    house_address = models.CharField(max_length=500, default="-", blank=True, null=True)
+    patient = models.OneToOneField(
+        Patient, on_delete=models.CASCADE, null=True, blank=True, related_name="address"
+    )
+
+    def __str__(self):
+        return (
+            self.patient.user.first_name
+            + " "
+            + self.patient.user.last_name
+            + " Address "
+        )
+
+
 class Disease(models.Model):
     name = models.CharField(max_length=100)
     stage = models.CharField(max_length=12)

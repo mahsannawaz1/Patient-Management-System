@@ -136,7 +136,6 @@
             value="{{disease_name}}"
             name="disease_name"
             id="disease_name"
-            required
             maxlength="100"
             placeholder="Disease Name"
             required
@@ -149,7 +148,7 @@
             value="{{disease_stage}}"
             name="disease_stage"
             id="disease_stage"
-            required
+            
             maxlength="100"
             placeholder="Disease Stage"
             required
@@ -162,24 +161,79 @@
             value="{{phone}}"
             name="phone"
             id="phone"
-            required
+           
             maxlength="11"
            
             placeholder="Phone Number" 
             required
           />
-          <div class="input-icon"><i class="fa-solid fa-mobile"></i></div>
+          <div class="input-icon"><i class="fa-solid fa-phone"></i></div>
         </div>
+          <div class="input-group input-group-icon">
+            <input
+              type="text"
+              value="{{address_city}}"
+              name="address_city"
+              id="address_city"
+              
+              maxlength="100"
+              placeholder="City"
+              
+            />
+            <div class="input-icon"><i class="fa-solid fa-city"></i></div>
+          </div>
+          <div class="input-group input-group-icon">
+            <input
+              type="text"
+              value="{{address_state}}"
+              name="address_state"
+              id="address_state"
+              
+              maxlength="100"
+              placeholder="State"
+             
+            />
+            <div class="input-icon"><i class="fa-solid fa-flag-usa"></i></div>
+          </div>
+          <div class="input-group input-group-icon">
+            <input
+              type="text"
+              value="{{address_country}}"
+              name="address_country"
+              id="address_country"
+              
+              maxlength="100"
+              placeholder="Country"
+             
+            />
+            <div class="input-icon"><i class="fa-solid fa-globe"></i></div>
+          </div>
+            <div class="input-group input-group-icon">
+              <input
+                type="text"
+                value="{{address}}"
+                name="address"
+                id="address"
+     
+              placeholder="House Address"
+                
+              />
+              <div class="input-icon"><i class="fa-solid fa-location-dot"></i></div>
+            </div>
         <div class="input-group input-group-icon my-select-field">
           <select  style="padding-left: 5.2rem;" name="doctor" id="docs" required >
-            <option  value="" disabled selected>Select Doctor</option>
+            {% if user.is_authenticated and user.is_staff %}
+            <option value="" disabled selected>Select Doctor</option>
             {% for doc in docs %}
-           
             <option value="{{doc}}">{{doc}}</option>
             {% endfor %}
+
+            {% elif user.is_authenticated and not user.is_staff %}
+            <option value="{{request.user}}" disabled selected>{{request.user}}</option>
+            {% endif %}
           </select>
            
-          <div class="input-icon"><i class="fa fa-user"></i></div>
+          <div class="input-icon"><i class="fa-solid fa-user-doctor"></i></div>
         </div>
 
         {%endif%}
@@ -201,11 +255,15 @@
         </div>
         <div class="input-group input-group-icon my-select-field">
           <select  style="padding-left: 5.2rem;" name="doctor" id="docs" required >
-            <option  value="" disabled selected>Select Assigned Doctor</option>
+            {% if user.is_authenticated and user.is_staff %}
+            <option value="" disabled selected>Select Doctor</option>
             {% for doc in docs %}
-           
             <option value="{{doc}}">{{doc}}</option>
             {% endfor %}
+
+            {% elif user.is_authenticated and not user.is_staff %}
+            <option value="{{request.user}}" disabled selected>{{request.user}}</option>
+            {% endif %}
           </select>
            
           <div class="input-icon"><i class="fa fa-user"></i></div>
@@ -217,9 +275,11 @@
          <button style="margin-left:11rem; width:50%" class="button-34" type="submit">Add {{role}}</button> 
         </div>
       </form>
+      {% if not user.is_authenticated %}
       <div style="text-align: center;margin-top: 1rem;">
         Already have an account? <a style="text-decoration: none;" href="{% url 'signin' role %}">SignIn Now</a>
       </div>
+      {% endif %}
     </div>
     <script
       src="https://kit.fontawesome.com/e50a128556.js"

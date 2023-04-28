@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{role}} | Profile</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
+  </head>
+  <body style="position: relative; min-height: 100vh">
+    <h1>Profile</h1>
+
+    <div style="position: absolute; top: 20px; right: 15px">
+      <a href="{% url 'dashboard' role %}"
+        ><button class="button-34">Dashboard</button></a
+      >
+      <a href="{% url 'logout' %}"><button class="button-34">Logout</button></a>
+    </div>
+
+    <div class="profile">
+      <div>
+        <p>
+          <span>Name</span>: {{user.user.first_name}} {{user.user.last_name}}
+        </p>
+        <p><span>Username</span>: {{user.user.username}}</p>
+        <p><span>Age</span>: {{user.user.age}}</p>
+        <p><span>Email</span>: {{user.user.email}} {{user.user.email}}</p>
+        {% if role == 'Doctor' %}
+        <p><span>Degree</span>: {{user.degree}}</p>
+        <p><span>Specialization</span>: {{user.specialization}}</p>
+        {% elif role == 'Patient' %}
+        <p><span>Phone Number</span>: {{user.mobile_phone}}</p>
+        <p><span>Disease Name</span>: {{user.disease.name}}</p>
+        <p><span>Disease Stage</span>: {{user.disease.stage}}</p>
+        <p>
+          <span>Doctor Name</span>:Dr. {{user.doctor.user.first_name}}
+          {{user.doctor.user.lastt_name}}
+        </p>
+        {% if user.address.city %}
+        <p><span>City</span>: {{user.address.city}}</p>
+        {% else %}
+        <p><span>City</span>: None</p>
+        {% endif %} {% if user.address.state %}
+        <p><span>State</span>: {{user.address.state}}</p>
+        {% else %}
+        <p><span>State</span>: None</p>
+        {% endif %} {% if user.address.country %}
+        <p><span>Country</span>: {{user.address.country}}</p>
+        {% else %}
+        <p><span>Country</span>: None</p>
+        {% endif %} {% if user.address.house_address %}
+        <p><span>Address</span>: {{user.address.house_address}}</p>
+        {% else %}
+        <p><span>Address</span>: None</p>
+        {% endif %} {% elif role == 'Nurse' %}
+        <p><span>Phone Number</span>: {{user.mobile_phone}}</p>
+        {%endif%}
+      </div>
+    </div>
+    <div style="display: flex; justify-content: center; margin-top: 1rem">
+      <a href="{% url 'update' role user.id 'Admin' %}"
+        ><button class="button-34">Update</button></a
+      >
+    </div>
+    <script
+      src="https://kit.fontawesome.com/e50a128556.js"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>
