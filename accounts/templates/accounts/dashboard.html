@@ -257,16 +257,6 @@
           {% else %}
           <p><span>Assigned To</span>: None</p>
           {% endif %}
-          <div style="display: flex; justify-content: center">
-            <div style="margin: none">
-              <a href="{% url 'update' 'Nurse' nurse.id role %}"
-                ><button class="button-34">Update</button></a
-              >
-              <a href="{% url 'delete' 'Nurse' nurse.user.id role %}"
-                ><button class="button-34">Delete</button></a
-              >
-            </div>
-          </div>
         </div>
         {% endfor %} {% else %}
         <h3 style="text-align: center; color: #dc3545; margin-top: 2rem">

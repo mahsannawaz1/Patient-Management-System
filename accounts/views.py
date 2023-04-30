@@ -12,13 +12,21 @@ from .models import (
 )
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.decorators import login_required
+from .decorators import (
+    unauthenticatedUser,
+    allowedUsers,
+    deleteUsers,
+    updateUsers,
+    profileUsers,
+)
 
 
 # Create your views here.
 
 
+@unauthenticatedUser
 def home(request):
-    context = {}
     if request.method == "POST":
         role = request.POST.get("role")
 
@@ -26,6 +34,7 @@ def home(request):
     return render(request, "accounts/home.html")
 
 
+@unauthenticatedUser
 def signup(request, role):
     context = {}
 
@@ -287,6 +296,7 @@ def signup(request, role):
     return render(request, "accounts/signup.html", context)
 
 
+@unauthenticatedUser
 def signin(request, role):
     context = {"role": role}
 
@@ -306,11 +316,14 @@ def signin(request, role):
     return render(request, "accounts/signin.html", context)
 
 
+@login_required
 def loggingout(request):
     logout(request)
     return redirect("/")
 
 
+@login_required
+@allowedUsers(["admin", "patient", "nurse", "doctor"])
 def dashboard(request, role):
     if role == "Admin":
         medicines = Medicine.objects.all()
@@ -360,6 +373,8 @@ def dashboard(request, role):
     return render(request, "accounts/dashboard.html", context)
 
 
+@login_required
+@deleteUsers(["admin", "doctor"])
 def delete(request, user, pk, role):
     if role == "Admin" and user == "Doctor":
         User = NewUser.objects.get(id=pk)
@@ -376,6 +391,8 @@ def delete(request, user, pk, role):
     return render(request, "accounts/delete.html", context)
 
 
+@login_required
+@updateUsers(["admin", "doctor", "nurse", "patient"])
 def update(request, user, pk, role):
     errors = []
     docs = Doctor.objects.all()
@@ -386,7 +403,7 @@ def update(request, user, pk, role):
     if (role == "Admin" or role == "Doctor") and user == "Patient":
         User = Patient.objects.get(id=pk)
 
-    if (role == "Admin" or role == "Doctor") and user == "Nurse":
+    if role == "Admin" and user == "Nurse":
         User = Nurse.objects.get(id=pk)
 
     if request.method == "POST":
@@ -474,6 +491,8 @@ def update(request, user, pk, role):
     return render(request, "accounts/update.html", context)
 
 
+@login_required
+@allowedUsers(["admin", "doctor"])
 def addPrescription(request, pk):
     if request.user.is_authenticated and request.user.is_staff:
         doc = Doctor.objects.get(id=pk)
@@ -530,6 +549,8 @@ def addPrescription(request, pk):
     return render(request, "accounts/add_prescription.html", context)
 
 
+@login_required
+@allowedUsers(["admin", "doctor", "nurse"])
 def addMedicine(request, role):
     num_of_meds = 3
     errors = []
@@ -576,6 +597,8 @@ def addMedicine(request, role):
     return render(request, "accounts/add_medicine.html", context)
 
 
+@login_required
+@allowedUsers(["admin", "doctor", "nurse"])
 def updateMedicine(request, role, pk):
     errors = []
     medicine = Medicine.objects.get(id=pk)
@@ -607,6 +630,8 @@ def updateMedicine(request, role, pk):
     return render(request, "accounts/update_medicine.html", context)
 
 
+@login_required
+@allowedUsers(["admin", "doctor", "nurse"])
 def deleteMedicine(request, role, pk):
     medicine = Medicine.objects.get(id=pk)
     context = {"medicine": medicine, "role": role}
@@ -616,6 +641,8 @@ def deleteMedicine(request, role, pk):
     return render(request, "accounts/delete_medicine.html", context)
 
 
+@login_required
+@profileUsers(["admin", "doctor", "nurse", "patient"])
 def showProfile(request, pk, role):
     newuser = NewUser.objects.get(id=pk)
     if role == "Admin":
